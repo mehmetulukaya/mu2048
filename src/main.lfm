@@ -1,14 +1,14 @@
 object frmMain: TfrmMain
-  Left = 177
+  Left = 175
   Height = 454
-  Top = 125
+  Top = 77
   Width = 695
   Caption = 'frmMain'
   ClientHeight = 454
   ClientWidth = 695
   OnCreate = FormCreate
   LCLVersion = '1.6.0.4'
-  object grdWords: TStringGrid
+  object grd_2048M: TStringGrid
     Left = 16
     Height = 242
     Top = 8
@@ -23,5 +23,10 @@ object frmMain: TfrmMain
     RowCount = 4
     ScrollBars = ssNone
     TabOrder = 0
+    OnDrawCell = grd_2048MDrawCell
+    OnMouseDown = grd_2048MMouseDown
+    OnMouseMove = grd_2048MMouseMove
+    OnMouseUp = grd_2048MMouseUp
+    OnPrepareCanvas = grd_2048MPrepareCanvas
   end
 end
