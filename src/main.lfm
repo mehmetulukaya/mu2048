@@ -1,0 +1,27 @@
+object frmMain: TfrmMain
+  Left = 177
+  Height = 454
+  Top = 125
+  Width = 695
+  Caption = 'frmMain'
+  ClientHeight = 454
+  ClientWidth = 695
+  OnCreate = FormCreate
+  LCLVersion = '1.6.0.4'
+  object grdWords: TStringGrid
+    Left = 16
+    Height = 242
+    Top = 8
+    Width = 266
+    AutoEdit = False
+    ColCount = 4
+    DefaultColWidth = 66
+    DefaultRowHeight = 60
+    FixedCols = 0
+    FixedRows = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll]
+    RowCount = 4
+    ScrollBars = ssNone
+    TabOrder = 0
+  end
+end
