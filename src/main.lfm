@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 175
+  Left = 182
   Height = 454
-  Top = 77
+  Top = 109
   Width = 695
   Caption = 'frmMain'
   ClientHeight = 454
@@ -11,7 +11,7 @@ object frmMain: TfrmMain
   object grd_2048M: TStringGrid
     Left = 16
     Height = 242
-    Top = 8
+    Top = 25
     Width = 266
     AutoEdit = False
     ColCount = 4
@@ -24,9 +24,19 @@ object frmMain: TfrmMain
     ScrollBars = ssNone
     TabOrder = 0
     OnDrawCell = grd_2048MDrawCell
+    OnKeyDown = grd_2048MKeyDown
     OnMouseDown = grd_2048MMouseDown
     OnMouseMove = grd_2048MMouseMove
     OnMouseUp = grd_2048MMouseUp
     OnPrepareCanvas = grd_2048MPrepareCanvas
+  end
+  object Button1: TButton
+    Left = 307
+    Height = 25
+    Top = 25
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 1
   end
 end

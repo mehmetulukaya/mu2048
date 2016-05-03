@@ -5,7 +5,12 @@ unit main;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Grids;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Grids,
+  StdCtrls,
+
+  LCLType
+
+  ;
 
 type
     TWordDirection=record
@@ -19,10 +24,14 @@ type
   { TfrmMain }
 
   TfrmMain = class(TForm)
+    Button1: TButton;
     grd_2048M: TStringGrid;
+    procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure grd_2048MDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
+    procedure grd_2048MKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure grd_2048MMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure grd_2048MMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -57,6 +66,18 @@ implementation
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   Caption:=Application.Title;
+  Randomize;
+end;
+
+procedure TfrmMain.Button1Click(Sender: TObject);
+var
+  x,y : Integer;
+begin
+  x := Random(grd_2048M.ColCount);
+  y := Random(grd_2048M.RowCount);
+
+  grd_2048M.Cells[x,y] := IntToStr( 2 );
+
 end;
 
 procedure TfrmMain.grd_2048MDrawCell(Sender: TObject; aCol, aRow: Integer;
@@ -64,6 +85,17 @@ procedure TfrmMain.grd_2048MDrawCell(Sender: TObject; aCol, aRow: Integer;
 begin
   //DrawLine(grd_2048M,psDash, pmXor);
   DrawLine(grd_2048M,psDash, pmXor);
+end;
+
+procedure TfrmMain.grd_2048MKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case key of
+    VK_UP:    ;
+    VK_DOWN:  ;
+    VK_LEFT:  ;
+    VK_RIGHT: ;
+  end;
 end;
 
 procedure TfrmMain.grd_2048MMouseDown(Sender: TObject; Button: TMouseButton;
