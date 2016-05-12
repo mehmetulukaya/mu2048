@@ -1,12 +1,14 @@
 object frmMain: TfrmMain
-  Left = 182
+  Left = 204
   Height = 454
-  Top = 109
+  Top = 0
   Width = 695
   Caption = 'frmMain'
   ClientHeight = 454
   ClientWidth = 695
+  KeyPreview = True
   OnCreate = FormCreate
+  Position = poDesktopCenter
   LCLVersion = '1.6.0.4'
   object grd_2048M: TStringGrid
     Left = 16
@@ -23,6 +25,7 @@ object frmMain: TfrmMain
     RowCount = 4
     ScrollBars = ssNone
     TabOrder = 0
+    OnDblClick = grd_2048MDblClick
     OnDrawCell = grd_2048MDrawCell
     OnKeyDown = grd_2048MKeyDown
     OnMouseDown = grd_2048MMouseDown
@@ -30,13 +33,12 @@ object frmMain: TfrmMain
     OnMouseUp = grd_2048MMouseUp
     OnPrepareCanvas = grd_2048MPrepareCanvas
   end
-  object Button1: TButton
-    Left = 307
+  object edt_StartNumber: TEdit
+    Left = 300
     Height = 25
     Top = 25
-    Width = 75
-    Caption = 'Button1'
-    OnClick = Button1Click
+    Width = 80
     TabOrder = 1
+    Text = '2'
   end
 end

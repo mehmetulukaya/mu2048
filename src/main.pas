@@ -13,8 +13,19 @@ uses
   ;
 
 type
+  TDir = (dirNowhere=0,
+          dirLefToRight,
+          dirUpToDown,
+          dirCrossToDown,
+          dirCrossToBackDown,
+          dirCrossToBackUp,
+          dirCrossToUp,
+          dirRightToLeft,
+          dirDownToUp);
+
+type
     TWordDirection=record
-      dir          : Byte;
+      dir          : TDir;
       s_length     : Integer;
       first,
       last         : TPoint;
@@ -24,10 +35,10 @@ type
   { TfrmMain }
 
   TfrmMain = class(TForm)
-    Button1: TButton;
+    edt_StartNumber: TEdit;
     grd_2048M: TStringGrid;
-    procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure grd_2048MDblClick(Sender: TObject);
     procedure grd_2048MDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
     procedure grd_2048MKeyDown(Sender: TObject; var Key: Word;
@@ -49,6 +60,10 @@ type
     function GetDirection(first,last:TPoint):TWordDirection;
   public
     { public declarations }
+
+    procedure MakeNumbers(direction: TDir);
+    procedure GenerateRandom(grd:TStringGrid;base:Integer);
+
   end;
 
 var
@@ -69,15 +84,9 @@ begin
   Randomize;
 end;
 
-procedure TfrmMain.Button1Click(Sender: TObject);
-var
-  x,y : Integer;
+procedure TfrmMain.grd_2048MDblClick(Sender: TObject);
 begin
-  x := Random(grd_2048M.ColCount);
-  y := Random(grd_2048M.RowCount);
-
-  grd_2048M.Cells[x,y] := IntToStr( 2 );
-
+  GenerateRandom(grd_2048M,StrToInt(edt_StartNumber.Text));
 end;
 
 procedure TfrmMain.grd_2048MDrawCell(Sender: TObject; aCol, aRow: Integer;
@@ -91,10 +100,11 @@ procedure TfrmMain.grd_2048MKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case key of
-    VK_UP:    ;
-    VK_DOWN:  ;
-    VK_LEFT:  ;
-    VK_RIGHT: ;
+    VK_SPACE  : GenerateRandom(grd_2048M,StrToInt(edt_StartNumber.Text)) ;
+    VK_UP:    GenerateRandom(grd_2048M,StrToInt(edt_StartNumber.Text)) ;
+    VK_DOWN:  GenerateRandom(grd_2048M,StrToInt(edt_StartNumber.Text)) ;
+    VK_LEFT:  GenerateRandom(grd_2048M,StrToInt(edt_StartNumber.Text)) ;
+    VK_RIGHT: GenerateRandom(grd_2048M,StrToInt(edt_StartNumber.Text)) ;
   end;
 end;
 
@@ -129,8 +139,6 @@ end;
 
 procedure TfrmMain.grd_2048MMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-var
-  n : integer;
 begin
   if Button = mbLeft then
   begin
@@ -162,7 +170,6 @@ procedure TfrmMain.DrawLine(grd : TStringGrid;
                             const PenMode: TPenMode);
 begin
   // draw the line (or erase the previous one)
-  // with FBitmap.Canvas do
   with grd.Canvas do
   begin
     Pen.Color := clYellow;
@@ -186,7 +193,8 @@ begin
   // 6 = cross to up
   // 7 = right to left
   // 8 = down to up
-  result.dir := 0;
+
+  result.dir := dirNowhere;
   s_length := 0;
 
   x_fark := last.x-first.x;
@@ -205,69 +213,56 @@ begin
 
   if ((x_fark>y_fark) and (y_fark=0)) and (p_fark =m_fark) then
     begin
-      Result.dir := 1;
+      Result.dir := dirLefToRight;
 
     end;
 
   if ((x_fark=0) and (y_fark>0)) and ((p_fark<0) and (m_fark>0) ) then
     begin
-      Result.dir := 2;
+      Result.dir := dirUpToDown;
 
     end;
 
   if ((x_fark>0) and (y_fark>0)) and ((p_fark=0) and (m_fark=0) ) then
     begin
-      Result.dir := 3;
+      Result.dir := dirCrossToDown;
 
     end;
 
   if ((x_fark<0) and (y_fark>0)) and ((p_fark=0) and (m_fark=0) ) then
     begin
-      Result.dir := 4;
+      Result.dir := dirCrossToBackDown;
 
     end;
 
   if ((x_fark<0) and (y_fark<0)) and ((p_fark=0) and (m_fark=0) ) then
     begin
-      Result.dir := 5;
+      Result.dir := dirCrossToBackUp;
 
     end;
 
   if ((x_fark>0) and (y_fark<0)) and ((p_fark=0) and (m_fark=0) ) then
     begin
-      Result.dir := 6;
+      Result.dir := dirCrossToUp;
 
     end;
 
   if ((x_fark<0) and (y_fark=0)) and ((p_fark>0) and (m_fark>0) ) then
     begin
-      Result.dir := 7;
+      Result.dir := dirRightToLeft;
 
     end;
 
   if ((x_fark=0) and (y_fark<0)) and ((p_fark<0) and (m_fark>0) ) then
     begin
-      Result.dir := 8;
+      Result.dir := dirDownToUp;
 
     end;
 
-  if Result.dir>0 then
-    begin
-      grd_2048MMouseDown(nil,mbLeft,[],first.x,first.y);     // clear last line
-      {Result.mes := GetWord(grdWords, first,last,Result.dir,s_length);
-      sent_ind := mem_Puzzler.Items.IndexOf(Result.mes);
-      if sent_ind<>-1 then
-        begin
-          mem_Puzzler.Selected[sent_ind] := true;
-          ClearWord(grdWords, first,last,Result.dir,s_length);
-          grdWordsMouseDown(nil,mbLeft,[],first.x,first.y);     // clear last line
+  //grd_2048MMouseDown(nil,mbLeft,[],first.x,first.y);     // clear last line
 
-
-
-        end; }
-    end;
-
-  {Panel4.Caption := 'First: '+
+  // for debug only
+  Caption := 'First: '+
                     inttostr(first.x)+' '+inttostr(first.y) +
                     ' Last: '+
                     inttostr(last.x)+' '+inttostr(last.y) +
@@ -278,14 +273,54 @@ begin
                     ' m F: '+
                     inttostr( m_fark ) +
                     ' Result: '+
-                    inttostr( Result.dir ) +
+                    inttostr( Ord(Result.dir) ) +
                     ' s_len: '+
                     inttostr( s_length ) +
                     ' mes: '+
                     Result.mes +
-                    '';   }
+                    '';
 
 
+end;
+
+procedure TfrmMain.MakeNumbers(direction: TDir);
+begin
+  //
+
+  case direction of
+    dirNowhere:;
+    dirLefToRight:;
+    dirUpToDown:;
+    dirCrossToDown:;
+    dirCrossToBackDown:;
+    dirCrossToBackUp:;
+    dirCrossToUp:;
+    dirRightToLeft:;
+    dirDownToUp:;
+  end;
+
+end;
+
+procedure TfrmMain.GenerateRandom(grd: TStringGrid; base: Integer);
+var
+  tout : TDateTime;
+
+  c,r  : Integer;
+begin
+  tout := now + (1/24/60/60)*1;
+  with grd do
+  begin
+    repeat
+      c := Random(ColCount);
+      r := Random(RowCount);
+    until (Cells[c,r]='') or (now>tout);
+
+    if tout>=now then
+      begin
+        Cells[c,r] := IntToStr( base );
+      end;
+
+  end;
 end;
 
 end.
