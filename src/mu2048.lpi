@@ -5,7 +5,7 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="MU2048 Game"/>
+      <Title Value="MU2048 Simple Machine vs Human Number Game BETA Version"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
@@ -14,6 +14,11 @@
       <EnableI18N LFM="False"/>
     </i18n>
     <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="1"/>
+      <MinorVersionNr Value="2"/>
+      <BuildNr Value="83"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -32,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="mu2048.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -44,6 +49,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../../muterm/MuLibs.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -53,9 +62,16 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../muterm"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <CodeGeneration>
+      <TargetOS Value="win32"/>
+    </CodeGeneration>
     <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

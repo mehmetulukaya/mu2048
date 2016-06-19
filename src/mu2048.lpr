@@ -13,7 +13,7 @@ uses
 {$R *.res}
 
 begin
-  Application.Title:='MU2048 Game';
+  Application.Title:='MU2048 Simple Machine vs Human Number Game BETA Version';
   RequireDerivedFormResource:=True;
   Application.Initialize;
   Application.CreateForm(TfrmMain, frmMain);

@@ -1,44 +1,370 @@
 object frmMain: TfrmMain
-  Left = 204
-  Height = 454
+  Left = 103
+  Height = 448
   Top = 0
-  Width = 695
-  Caption = 'frmMain'
-  ClientHeight = 454
-  ClientWidth = 695
+  Width = 768
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = 'MU2048 Simple Machine vs Human Game'
+  ClientHeight = 448
+  ClientWidth = 768
   KeyPreview = True
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
   Position = poDesktopCenter
   LCLVersion = '1.6.0.4'
-  object grd_2048M: TStringGrid
-    Left = 16
-    Height = 242
-    Top = 25
-    Width = 266
+  object grd_2048H: TStringGrid
+    Left = 27
+    Height = 243
+    Top = 69
+    Width = 267
     AutoEdit = False
+    Color = clMoneyGreen
     ColCount = 4
     DefaultColWidth = 66
     DefaultRowHeight = 60
+    FixedColor = clWhite
     FixedCols = 0
     FixedRows = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll]
+    Font.Color = clBlack
+    Font.Height = -24
+    Font.Name = 'Serif'
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine]
+    ParentFont = False
     RowCount = 4
     ScrollBars = ssNone
     TabOrder = 0
-    OnDblClick = grd_2048MDblClick
-    OnDrawCell = grd_2048MDrawCell
-    OnKeyDown = grd_2048MKeyDown
-    OnMouseDown = grd_2048MMouseDown
-    OnMouseMove = grd_2048MMouseMove
-    OnMouseUp = grd_2048MMouseUp
-    OnPrepareCanvas = grd_2048MPrepareCanvas
+    TitleFont.Color = clBlack
+    TitleFont.Height = -24
+    TitleFont.Name = 'Serif'
+    OnDrawCell = grd_2048HDrawCell
+    OnMouseDown = grd_2048HMouseDown
+    OnMouseMove = grd_2048HMouseMove
+    OnMouseUp = grd_2048HMouseUp
+    OnPrepareCanvas = grd_2048HPrepareCanvas
   end
   object edt_StartNumber: TEdit
-    Left = 300
+    Left = 346
     Height = 25
-    Top = 25
-    Width = 80
+    Top = 188
+    Width = 75
+    MaxLength = 1
+    NumbersOnly = True
     TabOrder = 1
     Text = '2'
+  end
+  object Label1: TLabel
+    Left = 341
+    Height = 15
+    Top = 169
+    Width = 85
+    Caption = 'Base Number:'
+    ParentColor = False
+  end
+  object btnStart: TButton
+    Left = 346
+    Height = 25
+    Top = 218
+    Width = 75
+    Caption = 'Start'
+    OnClick = btnStartClick
+    TabOrder = 2
+  end
+  object btnUndo: TButton
+    Left = 346
+    Height = 25
+    Top = 252
+    Width = 75
+    Caption = 'Undo'
+    OnClick = btnUndoClick
+    TabOrder = 3
+  end
+  object Label2: TLabel
+    Left = 27
+    Height = 15
+    Top = 325
+    Width = 69
+    Caption = 'Total Score:'
+    ParentColor = False
+  end
+  object edt_Score_H: TEdit
+    Left = 114
+    Height = 25
+    Top = 319
+    Width = 66
+    TabOrder = 4
+  end
+  object btnCancel: TButton
+    Left = 346
+    Height = 25
+    Top = 287
+    Width = 75
+    Caption = 'Cancel'
+    OnClick = btnCancelClick
+    TabOrder = 5
+  end
+  object grd_2048M: TStringGrid
+    Left = 476
+    Height = 243
+    Top = 69
+    Width = 267
+    AutoEdit = False
+    Color = clMoneyGreen
+    ColCount = 4
+    DefaultColWidth = 66
+    DefaultRowHeight = 60
+    FixedColor = clWhite
+    FixedCols = 0
+    FixedRows = 0
+    Flat = True
+    Font.Color = clBlack
+    Font.Height = -17
+    Font.Name = 'Courier 10 Pitch'
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll]
+    ParentFont = False
+    RowCount = 4
+    ScrollBars = ssNone
+    TabOrder = 6
+    TitleFont.Color = clBlack
+    TitleFont.Height = -17
+    TitleFont.Name = 'Courier 10 Pitch'
+    OnPrepareCanvas = grd_2048MPrepareCanvas
+  end
+  object Label3: TLabel
+    Left = 476
+    Height = 15
+    Top = 325
+    Width = 69
+    Caption = 'Total Score:'
+    ParentColor = False
+  end
+  object edt_Score_M: TEdit
+    Left = 563
+    Height = 25
+    Top = 319
+    Width = 66
+    TabOrder = 7
+  end
+  object Label4: TLabel
+    Left = 27
+    Height = 15
+    Top = 49
+    Width = 48
+    Caption = 'Human:'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 476
+    Height = 15
+    Top = 49
+    Width = 64
+    Caption = 'Computer:'
+    ParentColor = False
+  end
+  object Label6: TLabel
+    Left = 27
+    Height = 15
+    Top = 353
+    Width = 66
+    Caption = 'Total Move:'
+    ParentColor = False
+  end
+  object edt_Moves_H: TEdit
+    Left = 114
+    Height = 25
+    Top = 347
+    Width = 66
+    TabOrder = 8
+  end
+  object Label7: TLabel
+    Left = 476
+    Height = 15
+    Top = 353
+    Width = 66
+    Caption = 'Total Move:'
+    ParentColor = False
+  end
+  object edt_Moves_M: TEdit
+    Left = 563
+    Height = 25
+    Top = 347
+    Width = 66
+    TabOrder = 9
+  end
+  object cmb_Game_Type: TComboBox
+    Left = 319
+    Height = 25
+    Top = 69
+    Width = 128
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      'Single Player'
+      'With Computer'
+    )
+    Style = csDropDownList
+    TabOrder = 10
+    Text = 'Single Player'
+  end
+  object Label8: TLabel
+    Left = 348
+    Height = 15
+    Top = 49
+    Width = 70
+    Caption = 'Game Type:'
+    ParentColor = False
+  end
+  object Image1: TImage
+    Left = 319
+    Height = 43
+    Top = 381
+    Width = 78
+    Center = True
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B477261706869637C02000089504E47
+      0D0A1A0A0000000D494844520000005F0000004008060000007CCCABBB000000
+      0473424954080808087C0864880000023349444154789CED9A51928230104407
+      6B2FA1D7903379273D135E438F91FD0A1531B00B64D23D4CDE97E556D1E13164
+      51BB0B210421E2F178A81EFF76BBA91E7F0D1D8B7C6DE953182E0285FC54FCF5
+      7A55CD7A3E9FE36BF4053841D327688BAF95F15FE0931FA73E95723E9F55B2DE
+      EFF7F83ADE01C8E9A79A7C113DF1DAC7DEC20F7A014B5C2E97DDC778BD5E0556
+      A203DDE4474A882F791C0D68E57BA0C907D2E403312DBFEF7BF41276615ABE75
+      CCCA8F536F79FACDCA3F0226E54FA7DDEAF49B947F14CCC99F9B728BD36F4EFE
+      9168F281507FAB99631806F4128AD1261F48930FA4C907422BBFD42F50CCBF64
+      51FFC365165702DAC9D7206D2F3040275F4B109B781182DE8E48BEBBA3094367
+      478464F2A384B4CAA7058B781192C98FD42ACB3288172199FC480D292CE24532
+      8F9A9EFAF1396A9EFFB8EDA0FBF11EF3BB104240F7E3BDE67FECF9E87EBCB7FC
+      EE7EBF87E99B35FBF1B94579C9FF7ADA41F7E33DE52F7EB186EEC71F3D7FF639
+      1FDD8FF7904FF521CB1B4D3E90261F08F52F5939969A69D66A2545E4A742AC09
+      5843E9F3DC25DF623FB214F1DCF75C844D7B7EDFF730F173278BBAE3F6B85835
+      F99E27FD2FB6DC09AB267F18068A3D7DBA069635AD5DC7A63D3F86B43B01B0E7
+      A7C1A8A98BB9C8FCBDD9451E35196EFB1A943E4FD39F70AD5F74D3F2ADD3E403
+      69F281CCCA47F7E33DE42F3EEDA0FBF147CFAFBAEDA06BDA6CF95FF2D1FD784F
+      F91F8D35543FDE6BFE295D04AA1FEF35FFA39F8FEEC77BCB3FE5DEAC11BCF66F
+      47CCFF05D6D758EFE00A3A180000000049454E44AE426082
+    }
+    Stretch = True
+    Transparent = True
+  end
+  object Label9: TLabel
+    Left = 348
+    Height = 15
+    Top = 360
+    Width = 53
+    Caption = 'Controls:'
+    ParentColor = False
+  end
+  object Image2: TImage
+    Left = 419
+    Height = 43
+    Top = 381
+    Width = 28
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B47726170686963D801000089504E47
+      0D0A1A0A0000000D49484452000000310000003D0806000000045E8167000000
+      0473424954080808087C0864880000018F494441546881ED9A4BB283201045D1
+      CA029C38601DECC945B927D7C1C0893BE08DB03ACD5F4DB879D567468A867B24
+      54343238E79C22ACEB4A9BCA18A37AB26DDB5B7B5996A0CF4025A840EFF01C2A
+      C3454E899C80D6FAD2C4D6DA5B63D07AA5D2228373CEA504AE86E741EE8E4365
+      62222FDAB924304D53F5C4C7715CAEE7B55AEB53C41813EC93916F645FC4276F
+      11F035B976A996F78F5D549F7DF41FA436726BF82749CDCDB38EBCC313FBE053
+      A4B20512949EABD092212BF12B88040A22818248A02012280412F4B6377627FA
+      6D6806FE7CE129AEC455115E77659CDA9A57EC43FE207367459E1A27B50A4A25
+      244A45684425506FC7531736908809CCF3FC7CA20AF67D7F6BD3C7544A7163F7
+      1268993B2BD153A025C3FFFCB1FB454402059140412450100914440205914041
+      24501009144402059140412450100914B212FC0FDD1ED46428AE444F91DAB993
+      2F5962837DEB0FE6D60B1748E4CEECF5FE7A35BD78447CD595CB744AF0C381D6
+      5A0899580E9E357BA41491D891D29136782734B2877B7D2376BC14117ECCFA0F
+      7020BE88CD89CC4B0000000049454E44AE426082
+    }
+    Stretch = True
+    Transparent = True
+  end
+  object Label10: TLabel
+    Left = 348
+    Height = 15
+    Top = 106
+    Width = 74
+    Caption = 'Game Level:'
+    ParentColor = False
+  end
+  object cmb_Game_Level: TComboBox
+    Left = 319
+    Height = 25
+    Top = 126
+    Width = 128
+    ItemHeight = 0
+    ItemIndex = 1
+    Items.Strings = (
+      '3 X 3'
+      '4 X 4'
+      '5 X 5'
+      '6 X 6'
+      '7 X 7'
+      '8 X 8'
+    )
+    OnChange = cmb_Game_LevelChange
+    Style = csDropDownList
+    TabOrder = 11
+    Text = '4 X 4'
+  end
+  object btnPause: TToggleBox
+    Left = 348
+    Height = 23
+    Top = 321
+    Width = 70
+    Caption = 'Pause'
+    TabOrder = 12
+  end
+  object lbl_Machine: TLabel
+    Left = 476
+    Height = 15
+    Top = 401
+    Width = 20
+    Caption = '.....'
+    ParentColor = False
+  end
+  object lbl_Human: TLabel
+    Left = 27
+    Height = 15
+    Top = 401
+    Width = 20
+    Caption = '.....'
+    ParentColor = False
+  end
+  object TrackBar1: TTrackBar
+    Left = 643
+    Height = 35
+    Top = 347
+    Width = 100
+    Frequency = 50
+    Max = 1000
+    Min = 100
+    OnChange = TrackBar1Change
+    PageSize = 50
+    Position = 500
+    ScalePos = trBottom
+    TabOrder = 13
+  end
+  object Label11: TLabel
+    Left = 643
+    Height = 15
+    Top = 325
+    Width = 42
+    Caption = 'Speed:'
+    ParentColor = False
+  end
+  object tmrGeneral: TTimer
+    Interval = 250
+    OnTimer = tmrGeneralTimer
+    left = 519
+    top = 144
+  end
+  object tmrComputer: TTimer
+    Interval = 500
+    OnTimer = tmrComputerTimer
+    left = 683
+    top = 222
   end
 end
