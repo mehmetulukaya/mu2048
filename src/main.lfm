@@ -1,11 +1,11 @@
 object frmMain: TfrmMain
-  Left = 103
-  Height = 448
-  Top = 0
+  Left = 171
+  Height = 450
+  Top = 87
   Width = 768
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'MU2048 Simple Machine vs Human Game'
-  ClientHeight = 448
+  ClientHeight = 450
   ClientWidth = 768
   KeyPreview = True
   OnClose = FormClose
@@ -13,7 +13,7 @@ object frmMain: TfrmMain
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   object grd_2048H: TStringGrid
     Left = 27
     Height = 243

@@ -113,8 +113,10 @@ type TgrdArr = array of array of Integer;
     function IsGrdFull(grd:TStringGrid):Boolean;
     function IsGameOver(var grd: TStringGrid; var arr: TgrdArr): Boolean;
 
+    function CntGrdFullCells(grd:TStringGrid):Integer;
+
     function WhichWay(var grd: TStringGrid; var arr: TgrdArr): Integer;
-    function WhichWayII(var grd: TStringGrid; var arr: TgrdArr): Integer;
+    function CheckWays(var grd: TStringGrid; var arr: TgrdArr): Integer;
 
     procedure SaveGridValues(var grdOrgArr,grdBackArr:TgrdArr);
     procedure LoadGridValues(var grdBackArr,grdOrgArr:TgrdArr);
@@ -134,6 +136,7 @@ type TgrdArr = array of array of Integer;
     procedure ShowNumbers(grd:TStringGrid;var grdArr:TgrdArr);
 
     procedure ReportScore(var grd: TStringGrid; var edt_Score: TEdit);
+    function GetMaxVal(var grd: TStringGrid; var Arr:TgrdArr):Integer;
 
   end;
 
@@ -150,6 +153,8 @@ var
   arr_grd_Human_Backup : TgrdArr;
   arr_grd_Computer : TgrdArr;
   arr_grd_Computer_Backup : TgrdArr;
+  arr_grd_Computer_Test : TgrdArr;
+  arr_grd_Computer_Test_Backup : TgrdArr;
 
   BaseNum : Integer;
   Move_H,
@@ -406,6 +411,8 @@ begin
 
     SetLength2D(arr_grd_Computer,ColCount,RowCount);
     SetLength2D(arr_grd_Computer_Backup,ColCount,RowCount);
+    SetLength2D(arr_grd_Computer_Test,ColCount,RowCount);
+    SetLength2D(arr_grd_Computer_Test_Backup,ColCount,RowCount);
   end;
 
   Move_H:=0;
@@ -657,6 +664,7 @@ begin
                  arr_grd_Computer_Backup,
                  Move_M,
                  dirsDown);
+    5: LoadGridValues(arr_grd_Computer_Backup,arr_grd_Computer);
   end;
 
 end;
@@ -1054,9 +1062,21 @@ begin
 
 end;
 
+function TfrmMain.CntGrdFullCells(grd: TStringGrid): Integer;
+var
+  r,c : Integer;
+begin
+  Result:=0;
+  for r := 0 to grd.RowCount-1 do
+    for c := 0 to grd.ColCount-1 do
+      if (grd.Cells[c,r]<>'') then
+        Inc(Result);
+end;
+
 var
   max:integer=0;
   whc_cnt:integer=0;
+  old_way:integer=0;
 function TfrmMain.WhichWay(var grd: TStringGrid; var arr: TgrdArr): Integer;
 var
   max_way,
@@ -1065,158 +1085,318 @@ begin
   max_way :=0;
   Result :=-1;
 
-  inc(whc_cnt);
-  if whc_cnt>4 then
+  dec(whc_cnt);
+  if whc_cnt<1 then
     begin
-      whc_cnt:=1;
+      whc_cnt:=4;
       max:=0;
     end;
-  //max:=0;
-  // check all directions for possibilities
-  // to left
-  //if whc_cnt=1 then
-  if max_way=0 then
-  for r:= 0 to Pred(grd.RowCount) do
-    for c:=0 to (grd.ColCount) do
-      with grd do
-      begin
-        xc := c;
-        repeat
-          dec(xc);
-          if xc-1<0 then
-            Break;
-          if arr[xc-1][r]=arr[xc][r] then
-            begin
-              if (arr[xc][r]>max) then
-                begin
-                  max:=arr[xc-1][r];
-                  max_way:=1;
-                end;
-              Break;
-            end;
-        until (xc<=0) or (max_way<>0);
-      end;
 
-  // to right
-  //if whc_cnt=2 then
-  if max_way=0 then
-  for r:= 0 to Pred(grd.RowCount) do
-    for c:=(grd.ColCount) downto 0 do
-      with grd do
-      begin
-        xc := c-1;
-        repeat
-          inc(xc);
-          if xc+1>=grd.ColCount then
-            Break;
-
-          if arr[xc+1][r]=arr[xc][r] then
-            begin
-              if (arr[xc][r]>max) then
-                begin
-                  max:=arr[xc][r];
-                  max_way:=2;
-                end;
-              Break;
-            end;
-        until (xc>=grd.ColCount) or (max_way<>0);
-      end;
-
-  // to up
-  //if whc_cnt=3 then
-  if max_way=0 then
-  for c:=0 to Pred(grd.ColCount) do
-    for r:= 0 to (grd.RowCount) do
-    with grd do
+  // if didn't find any way
+  if max_way<>0 then
     begin
-      xr := r;
-      repeat
-        dec(xr);
-        if xr-1<0 then
-          Break;
+      // check all directions for possibilities
 
-        if arr[c][xr-1]=arr[c][xr] then
+      if max_way=0 then
+      begin
+      // to left
+      //if max_way=0 then
+      for r:= 0 to Pred(grd.RowCount) do
+        for c:=0 to (grd.ColCount) do
+          with grd do
           begin
-            if (arr[c][xr]>max) then
-              begin
-                max:=arr[c][xr];
-                max_way:=3;
-              end;
-            Break;
+            xc := c;
+            repeat
+              dec(xc);
+              if xc-1<0 then
+                Break;
+              if arr[xc-1][r]=arr[xc][r] then
+                begin
+                  if (arr[xc][r]>max) then
+                    begin
+                      max:=arr[xc-1][r];
+                      max_way:=1;
+                    end;
+                  Break;
+                end;
+            until (xc<=0) or (max_way<>0);
           end;
-      until (xr<=0) or (max_way<>0);
+
+      // to right
+      //if max_way=0 then
+      for r:= 0 to Pred(grd.RowCount) do
+        for c:=(grd.ColCount) downto 0 do
+          with grd do
+          begin
+            xc := c-1;
+            repeat
+              inc(xc);
+              if xc+1>=grd.ColCount then
+                Break;
+
+              if arr[xc+1][r]=arr[xc][r] then
+                begin
+                  if (arr[xc][r]>max) then
+                    begin
+                      max:=arr[xc][r];
+                      max_way:=2;
+                    end;
+                  Break;
+                end;
+            until (xc>=grd.ColCount) or (max_way<>0);
+          end;
+
+      // to up
+      //if max_way=0 then
+      for c:=0 to Pred(grd.ColCount) do
+        for r:= 0 to (grd.RowCount) do
+        with grd do
+        begin
+          xr := r;
+          repeat
+            dec(xr);
+            if xr-1<0 then
+              Break;
+
+            if arr[c][xr-1]=arr[c][xr] then
+              begin
+                if (arr[c][xr]>max) then
+                  begin
+                    max:=arr[c][xr];
+                    max_way:=3;
+                  end;
+                Break;
+              end;
+          until (xr<=0) or (max_way<>0);
+        end;
+
+      // to down
+      //if max_way=0 then
+      for c:=0 to Pred(grd.ColCount) do
+        for r:= (grd.RowCount) downto 0 do
+          with grd do
+          begin
+            xr := r-1;
+            repeat
+              inc(xr);
+              if xr+1>=grd.RowCount then
+                Break;
+              if arr[c][xr+1]=arr[c][xr] then
+                begin
+                  if (arr[c][xr]>max) then
+                    begin
+                      max:=arr[c][xr];
+                      max_way:=4;
+                    end;
+                  Break;
+                end;
+            until (xr>=grd.RowCount) or (max_way<>0);
+          end;
+        if max_way<>0 then
+          lbl_Machine.Caption:='N:'+IntToStr(max_way);
+      end;
+
+      {if max_way=0 then
+        begin
+          max_way:=whc_cnt;
+          lbl_Machine.Caption:='M:'+IntToStr(max_way);
+        end
+        else }
+          lbl_Machine.Caption:='P:'+IntToStr(max_way);
+    end
+    else
+      lbl_Machine.Caption:='N:'+IntToStr(max_way);
+
+  if max_way=0 then
+    begin
+      SaveGridValues(arr,arr_grd_Computer_Test);
+      max_way:=CheckWays(grd,arr_grd_Computer_Test);
+      lbl_Machine.Caption:='W:'+IntToStr(max_way);
     end;
 
-  // to down
-  //if whc_cnt=4 then
+  {if max_way=0 then
+    repeat
+      max_way:=Random(5);
+      if (max_way>0) and (max_way<5) and (max_way<>old_way) then
+        lbl_Machine.Caption:='R:'+IntToStr(max_way);
+    until (max_way>0) and (max_way<5) and (max_way<>old_way);}
   if max_way=0 then
-  for c:=0 to Pred(grd.ColCount) do
-    for r:= (grd.RowCount) downto 0 do
-      with grd do
-      begin
-        xr := r-1;
-        repeat
-          inc(xr);
-          if xr+1>=grd.RowCount then
-            Break;
-          if arr[c][xr+1]=arr[c][xr] then
-            begin
-              if (arr[c][xr]>max) then
-                begin
-                  max:=arr[c][xr];
-                  max_way:=4;
-                end;
-              Break;
-            end;
-        until (xr>=grd.RowCount) or (max_way<>0);
-      end;
-
-  if max_way=0 then
-    max_way:=whc_cnt;
-
+    begin
+      max_way:=whc_cnt;
+      lbl_Machine.Caption:='M:'+IntToStr(max_way);
+    end;
+  old_way:=max_way;
   Result:=max_way;
 end;
 
-function TfrmMain.WhichWayII(var grd: TStringGrid; var arr: TgrdArr): Integer;
+function TfrmMain.CheckWays(var grd: TStringGrid; var arr: TgrdArr): Integer;
 var
-  max_way,
+  last_val : Integer;
+  max_val : array[1..4] of Integer;
+  max_val_s : array[1..4] of Integer;
+  check_max,
   xc,xr,r,c : Integer;
 begin
-  max_way :=0;
-  Result :=-1;
+  Result:=0;
+  check_max := 0;
 
-  // check all directions for possibilities
-  // to left
-  //if whc_cnt=1 then
-  for r:= 0 to Pred(grd.RowCount) do
-    for c:=0 to (grd.ColCount) do
-      with grd do
-      begin
-        xc := c;
-        repeat
-          dec(xc);
-          if xc-1<0 then
-            Break;
-          if arr[xc-1][r]=arr[xc][r] then
-            begin
-              if (arr[xc][r]>=max) then
+  last_val := GetMaxVal(grd,arr);
+
+  for c:=1 to 4 do
+    max_val[c]:=0;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToLeft(grd,arr_grd_Computer_Test_Backup) then
+    begin
+
+      max_val[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      //MoveToLeft(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      // to left
+      for r:= 0 to Pred(grd.RowCount) do
+        for c:=0 to (grd.ColCount) do
+          with grd do
+          begin
+            xc := c;
+            repeat
+              dec(xc);
+              if xc-1<0 then
+                Break;
+              if arr[xc-1][r]=arr[xc][r] then
                 begin
-                  max:=arr[xc-1][r];
-                  max_way:=1;
+                  if (arr[xc][r]>check_max) then
+                    begin
+                      check_max:=arr[xc-1][r];
+                      Result:=1;
+                      Break;
+                    end;
                 end;
+            until (xc<=0) or (Result<>0);
+          end;
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToRight(grd,arr_grd_Computer_Test_Backup) then
+    begin
+
+      max_val[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      //MoveToRight(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      // to right
+      for r:= 0 to Pred(grd.RowCount) do
+        for c:=(grd.ColCount) downto 0 do
+          with grd do
+          begin
+            xc := c-1;
+            repeat
+              inc(xc);
+              if xc+1>=grd.ColCount then
+                Break;
+
+              if arr[xc+1][r]=arr[xc][r] then
+                begin
+                  if (arr[xc][r]>check_max) then
+                    begin
+                      check_max:=arr[xc][r];
+                      Result:=2;
+                      Break;
+                    end;
+                end;
+            until (xc>=grd.ColCount) or (Result<>0);
+          end;
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToUp(grd,arr_grd_Computer_Test_Backup) then
+    begin
+
+      max_val[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      //MoveToUp(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      // to up
+      for c:=0 to Pred(grd.ColCount) do
+        for r:= 0 to (grd.RowCount) do
+        with grd do
+        begin
+          xr := r;
+          repeat
+            dec(xr);
+            if xr-1<0 then
               Break;
-            end;
-        until (xc<=0) or (max_way<>0);
+
+            if arr[c][xr-1]=arr[c][xr] then
+              begin
+                if (arr[c][xr]>check_max) then
+                  begin
+                    check_max:=arr[c][xr];
+                    Result:=3;
+                    Break;
+                  end;
+              end;
+          until (xr<=0) or (Result<>0);
+        end;
+    end;
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+
+  if MoveToDown(grd,arr_grd_Computer_Test_Backup) then
+    begin
+
+      max_val[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      //MoveToDown(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      // to down
+      for c:=0 to Pred(grd.ColCount) do
+        for r:= (grd.RowCount) downto 0 do
+          with grd do
+          begin
+            xr := r-1;
+            repeat
+              inc(xr);
+              if xr+1>=grd.RowCount then
+                Break;
+              if arr[c][xr+1]=arr[c][xr] then
+                begin
+                  if (arr[c][xr]>check_max) then
+                    begin
+                      check_max:=arr[c][xr];
+                      Result:=4;
+                      Break;
+                    end;
+                end;
+            until (xr>=grd.RowCount) or (Result<>0);
+          end;
+    end;
+
+  for c:=4 downto 1 do
+    if (max_val[c]>last_val) and (max_val[c]>=check_max) then
+      begin
+        Result:=c;
       end;
+  {if Result=0 then
+  for c:=4 downto 1 do
+    if (max_val_s[c]>last_val) and (max_val_s[c]>=check_max)then
+      begin
+        Result:=c;
+      end;}
+
 end;
+
 
 procedure TfrmMain.SaveGridValues(var grdOrgArr, grdBackArr: TgrdArr);
 var
   lc,lr,
   c,r:Integer;
 begin
-  lc := length(grdOrgArr)-1;
-  lr := length(grdOrgArr[0])-1;
+  lc := Length(grdOrgArr)-1;
+  lr := Length(grdOrgArr[0])-1;
   for c:=0 to lc do
     for r:=0 to lr do
       grdBackArr[c][r] := grdOrgArr[c][r];
@@ -1228,8 +1408,8 @@ var
   lc,lr,
   c,r:Integer;
 begin
-  lc := length(grdOrgArr)-1;
-  lr := length(grdOrgArr[0])-1;
+  lc := Length(grdOrgArr)-1;
+  lr := Length(grdOrgArr[0])-1;
   for c:=0 to lc do
     for r:=0 to lr do
       grdOrgArr[c][r] := grdBackArr[c][r];
@@ -1254,7 +1434,6 @@ procedure TfrmMain.MoveCells(grd: TStringGrid; var arr: TgrdArr;
 begin
   if IsGameOver(grd,arr) then
     begin
-      // ShowMessage('Game is over!');
       case grd.Name of
         'grd_2048H':begin
                       lbl_Human.Caption:='Game is over!';
@@ -1543,6 +1722,20 @@ begin
       if grd.Cells[c,r]<>'' then
         score := score + StrToInt(grd.Cells[c,r]);
   edt_Score.Text:= IntToStr(score);
+end;
+
+function TfrmMain.GetMaxVal(var grd: TStringGrid; var Arr: TgrdArr): Integer;
+var
+  score,
+  c,r:Integer;
+begin
+  score:=-1;
+  Result:=0;
+  for c:=0 to Pred(grd.ColCount) do
+    for r:=0 to Pred(grd.RowCount) do
+      if (Arr[c][r]>score) and (Arr[c][r]>0) then
+        score := Arr[c][r];
+  Result := score;
 end;
 
 
