@@ -1,11 +1,11 @@
 object frmMain: TfrmMain
-  Left = 171
-  Height = 450
-  Top = 87
+  Left = 125
+  Height = 537
+  Top = 72
   Width = 768
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'MU2048 Simple Machine vs Human Game'
-  ClientHeight = 450
+  ClientHeight = 537
   ClientWidth = 768
   KeyPreview = True
   OnClose = FormClose
@@ -13,7 +13,7 @@ object frmMain: TfrmMain
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.9.0.0'
   object grd_2048H: TStringGrid
     Left = 27
     Height = 243
@@ -355,16 +355,37 @@ object frmMain: TfrmMain
     Caption = 'Speed:'
     ParentColor = False
   end
+  object lbl_Machine1: TLabel
+    Left = 274
+    Height = 15
+    Top = 427
+    Width = 20
+    Caption = '.....'
+    ParentColor = False
+  end
+  object Memo1: TMemo
+    Left = 0
+    Height = 85
+    Top = 452
+    Width = 768
+    Align = alBottom
+    Lines.Strings = (
+      'Memo1'
+    )
+    OnDblClick = Memo1DblClick
+    ScrollBars = ssVertical
+    TabOrder = 14
+  end
   object tmrGeneral: TTimer
     Interval = 250
     OnTimer = tmrGeneralTimer
-    left = 519
-    top = 144
+    Left = 519
+    Top = 144
   end
   object tmrComputer: TTimer
     Interval = 500
     OnTimer = tmrComputerTimer
-    left = 683
-    top = 222
+    Left = 683
+    Top = 222
   end
 end

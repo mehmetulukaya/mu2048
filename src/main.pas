@@ -23,6 +23,12 @@ type
               dirsUp,
               dirsDown);
 
+  TDirSimpleX=(dirxNowhere=0,
+              dirxLeft,
+              dirxRight,
+              dirxUp,
+              dirxDown);
+
   TDir = (dirNowhere=0,
           dirLefToRight,
           dirUpToDown,
@@ -66,6 +72,8 @@ type TgrdArr = array of array of Integer;
     Label8: TLabel;
     Label9: TLabel;
     lbl_Human: TLabel;
+    lbl_Machine1: TLabel;
+    Memo1: TMemo;
     tmrComputer: TTimer;
     tmrGeneral: TTimer;
     btnPause: TToggleBox;
@@ -90,6 +98,7 @@ type TgrdArr = array of array of Integer;
       aState: TGridDrawState);
     procedure grd_2048MPrepareCanvas(sender: TObject; aCol, aRow: Integer;
       aState: TGridDrawState);
+    procedure Memo1DblClick(Sender: TObject);
     procedure tmrComputerTimer(Sender: TObject);
     procedure tmrGeneralTimer(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
@@ -117,6 +126,8 @@ type TgrdArr = array of array of Integer;
 
     function WhichWay(var grd: TStringGrid; var arr: TgrdArr): Integer;
     function CheckWays(var grd: TStringGrid; var arr: TgrdArr): Integer;
+    function CheckWaysII(var grd: TStringGrid; var arr: TgrdArr): Integer;
+    function CheckWaysIII(var grd: TStringGrid; var arr: TgrdArr): Integer;
 
     procedure SaveGridValues(var grdOrgArr,grdBackArr:TgrdArr);
     procedure LoadGridValues(var grdBackArr,grdOrgArr:TgrdArr);
@@ -137,6 +148,9 @@ type TgrdArr = array of array of Integer;
 
     procedure ReportScore(var grd: TStringGrid; var edt_Score: TEdit);
     function GetMaxVal(var grd: TStringGrid; var Arr:TgrdArr):Integer;
+    function GetMaxEqualVal(var grd: TStringGrid; var Arr:TgrdArr):TDirSimpleX;
+    function GetTotalVal(var grd: TStringGrid; var Arr:TgrdArr):Integer;
+    function GetSpaceVal(var grd: TStringGrid; var Arr:TgrdArr):Integer;
 
   end;
 
@@ -162,6 +176,11 @@ var
 
   Saved : Boolean=False;
   versionnum : string;
+
+  grdColor_H_C,
+  grdColor_H_R,
+  grdColor_M_C,
+  grdColor_M_R : Integer;
 
 implementation
 
@@ -347,6 +366,7 @@ begin
           lbl_Human.Caption:='....';
           lbl_Machine.Caption:='....';
           StartNewGame(grd_2048H);
+          Memo1.Lines.Clear;
         end;
     end;
   SaveGridValues(arr_grd_Human,arr_grd_Human_Backup);
@@ -557,6 +577,7 @@ procedure TfrmMain.grd_2048MPrepareCanvas(sender: TObject; aCol, aRow: Integer;
 var
   myTextStyle : TTextStyle;
   val : Integer;
+  str : String;
 begin
   myTextStyle.Alignment := taCenter;
   myTextStyle.Layout:= tlCenter;
@@ -624,6 +645,12 @@ begin
       Canvas.Font.Color:=VisibleContrast(Canvas.Brush.Color);
     end;
   end;
+end;
+
+procedure TfrmMain.Memo1DblClick(Sender: TObject);
+begin
+  Memo1.SelectAll;
+  Memo1.CopyToClipboard;
 end;
 
 var
@@ -907,7 +934,7 @@ var
   tout : TDateTime;
   c,r  : Integer;
 begin
-  tout := now + (1/24/60/60)*(1/2);
+  tout := now + (1/24/60/60)*(1);
   with grd do
   begin
     repeat
@@ -915,9 +942,11 @@ begin
       r := Random(RowCount);
     until (Cells[c,r]='') or (now>tout);
     if tout>=now then
+      begin
         arr[c][r]:=base;
+      end;
   end;
-  ShowNumbers(grd,arr_grd_Human);
+  ShowNumbers(grd,arr);
 end;
 
 procedure TfrmMain.StartNewGame(grd: TStringGrid);
@@ -1077,6 +1106,7 @@ var
   max:integer=0;
   whc_cnt:integer=0;
   old_way:integer=0;
+  old_w_cnt:integer=0;
 function TfrmMain.WhichWay(var grd: TStringGrid; var arr: TgrdArr): Integer;
 var
   max_way,
@@ -1093,7 +1123,7 @@ begin
     end;
 
   // if didn't find any way
-  if max_way<>0 then
+  if max_way=0 then
     begin
       // check all directions for possibilities
 
@@ -1207,6 +1237,7 @@ begin
     else
       lbl_Machine.Caption:='N:'+IntToStr(max_way);
 
+  max_way:=0;
   if max_way=0 then
     begin
       SaveGridValues(arr,arr_grd_Computer_Test);
@@ -1220,16 +1251,252 @@ begin
       if (max_way>0) and (max_way<5) and (max_way<>old_way) then
         lbl_Machine.Caption:='R:'+IntToStr(max_way);
     until (max_way>0) and (max_way<5) and (max_way<>old_way);}
-  if max_way=0 then
+
+  if (max_way=0) then
     begin
       max_way:=whc_cnt;
       lbl_Machine.Caption:='M:'+IntToStr(max_way);
     end;
+
+  if (old_way=max_way) then
+    begin
+      inc(old_w_cnt);
+      if old_w_cnt>10 then
+        begin
+          old_w_cnt:=0;
+          max_way:=whc_cnt;
+          lbl_Machine.Caption:='O:'+IntToStr(max_way);
+        end;
+    end;
+
   old_way:=max_way;
   Result:=max_way;
 end;
 
 function TfrmMain.CheckWays(var grd: TStringGrid; var arr: TgrdArr): Integer;
+var
+  max_cnt,
+  max_same_cnt,
+  last_val : Integer;
+  max_val : array[1..4] of Integer;
+
+  dirs_v,
+  dirs_same_cnt,
+  dirs_cnt: Integer;
+  dirs_val_c : array[1..4] of Integer;
+  dirs_val : array[1..4] of TDirSimpleX;
+
+  spc_same_cnt,
+  last_spc : Integer;
+  spc_val  : array[1..4] of Integer;
+
+  last_tot : Integer;
+  tot_val  : array[1..4] of Integer;
+
+  Res : array[1..3] of Integer;
+  c : Integer;
+  str:String;
+begin
+  Result:=0;
+
+  last_val := GetMaxVal(grd,arr);
+  for c:=1 to 4 do
+    max_val[c]:=0;
+
+  last_tot := GetTotalVal(grd,arr);
+  for c:=1 to 4 do
+    tot_val[c]:=0;
+
+  last_spc := GetSpaceVal(grd,arr);
+  for c:=1 to 4 do
+    spc_val[c]:=0;
+
+
+  dirs_v := Ord(GetMaxEqualVal(grd,arr));
+  for c:=1 to 4 do
+    begin
+      dirs_val[c]:=dirxNowhere;
+      dirs_val_c[c]:=0;
+    end;
+
+  for c:=1 to 3 do
+    Res[c]:=0;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToLeft(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+      dirs_val[1] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
+      spc_val[1] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
+      tot_val[1] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
+      //MoveToLeft(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToRight(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+      dirs_val[2] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
+      spc_val[2] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
+      tot_val[2] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
+      //MoveToRight(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToUp(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+      dirs_val[3] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
+      spc_val[3] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
+      tot_val[3] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
+      //MoveToUp(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToDown(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+      dirs_val[4] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
+      spc_val[4] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
+      tot_val[4] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
+      //MoveToDown(grd,arr_grd_Computer_Test_Backup);
+      //max_val_s[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  dirs_cnt:=0;
+  spc_same_cnt:=0;
+  for c:=1 to 4 do
+    begin
+      if spc_val[c]=spc_val[1] then
+        inc(spc_same_cnt);
+      if spc_val[c]>0 then
+          inc(dirs_cnt);
+    end;
+
+  if {(dirs_cnt=4) and } (spc_same_cnt<4) then
+    begin
+      for c:=1 to 4 do
+        if (spc_val[c]>last_spc) then
+          Res[1]:=c;
+    end
+    else
+      Res[1]:=0;
+
+  //if Res=0 then
+    begin
+      for c:=1 to 4 do
+        begin
+          if dirs_val[c]=dirxLeft then
+            inc(dirs_val_c[1]);
+
+          if dirs_val[c]=dirxRight then
+            inc(dirs_val_c[2]);
+
+          if dirs_val[c]=dirxUp then
+            inc(dirs_val_c[3]);
+
+          if dirs_val[c]=dirxDown then
+            inc(dirs_val_c[4]);
+        end;
+
+      dirs_cnt:=0;
+      dirs_same_cnt:=0;
+      for c:=1 to 4 do
+        begin
+          if dirs_val_c[c]=dirs_val_c[1] then
+            inc(dirs_same_cnt);
+          if dirs_val_c[c]>0 then
+            inc(dirs_cnt);
+        end;
+
+      if {(dirs_cnt=4) and } (dirs_same_cnt<4) then
+        begin
+          for c:=1 to 4 do
+            if (dirs_val_c[c]>dirs_v) then
+              Res[2]:=c;
+        end
+        else
+          Res[2]:=0;
+
+    end;
+
+  //if Res=0 then
+    begin
+      max_same_cnt:=0;
+      max_cnt:=0;
+      for c:=1 to 4 do
+        begin
+          if max_val[c]=max_val[1] then
+            inc(max_same_cnt);
+          if max_val[c]>0 then
+            inc(max_cnt);
+        end;
+      if {(max_cnt=4) and } (max_same_cnt<4) then
+        begin
+          for c:=1 to 4 do
+            if (max_val[c]>last_val) then
+                Res[3]:=c;
+        end
+        else
+          Res[3]:=0;
+    end;
+
+  for c:=1 to 3 do
+    if Res[c]>0 then
+      begin
+        Result:=Res[c];
+        SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+        case Result of
+          1:if not MoveToLeft(grd,arr_grd_Computer_Test_Backup) then
+              Result:=-1;
+          2:if not MoveToRight(grd,arr_grd_Computer_Test_Backup) then
+              Result:=-1;
+          3:if not MoveToUp(grd,arr_grd_Computer_Test_Backup) then
+              Result:=-1;
+          4:if not MoveToDown(grd,arr_grd_Computer_Test_Backup) then
+              Result:=-1;
+        end;
+        if Result>0 then
+          Break;
+      end;
+
+
+
+  str:='';
+  //for c:=4 downto 1 do
+  str:=str+IntToStr(last_spc)+';';
+
+  str:=str+'|';
+  for c:=1 to 4 do
+    str:=str+IntToStr(ord(spc_val[c]))+';';
+
+  str:=str+'|';
+  for c:=1 to 4 do
+    str:=str+IntToStr(ord(dirs_val_c[c]))+';';
+
+  str:=str+'|';
+  for c:=1 to 4 do
+    str:=str+IntToStr(max_val[c])+';';
+
+  str:=str+'|';
+  for c:=1 to 4 do
+    str:=str+IntToStr(tot_val[c])+';';
+
+  str:=str+'|';
+  for c:=1 to 3 do
+    str:=str+IntToStr(Res[c])+';';
+  str:=str+IntToStr(Result);
+
+  lbl_Machine1.Caption:=str;
+
+  if Memo1.Visible then
+    Memo1.Lines.Add(str);
+end;
+
+function TfrmMain.CheckWaysII(var grd: TStringGrid; var arr: TgrdArr): Integer;
 var
   last_val : Integer;
   max_val : array[1..4] of Integer;
@@ -1375,8 +1642,10 @@ begin
           end;
     end;
 
+  //if Result=0 then
   for c:=4 downto 1 do
-    if (max_val[c]>last_val) and (max_val[c]>=check_max) then
+    //if (max_val[c]>last_val) and (max_val[c]>=check_max) then
+    if (max_val[c]>last_val) then
       begin
         Result:=c;
       end;
@@ -1386,6 +1655,116 @@ begin
       begin
         Result:=c;
       end;}
+
+end;
+
+function TfrmMain.CheckWaysIII(var grd: TStringGrid; var arr: TgrdArr): Integer;
+var
+  last_val : Integer;
+  max_val : array[1..4] of Integer;
+  max_val_s : array[1..4] of Integer;
+
+  dirs_v : Integer;
+  dirs_val_c : array[1..4] of Integer;
+  dirs_val : array[1..4] of TDirSimpleX;
+
+  check_max,
+  xc,xr,r,c : Integer;
+  str:String;
+begin
+  Result:=0;
+  check_max := 0;
+
+  last_val := GetMaxVal(grd,arr);
+
+  for c:=1 to 4 do
+    max_val[c]:=0;
+
+  for c:=1 to 4 do
+    begin
+      dirs_val[c]:=dirxNowhere;
+      dirs_val_c[c]:=0;
+    end;
+
+  dirs_v := Ord(GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup));
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToLeft(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      MoveToLeft(grd,arr_grd_Computer_Test_Backup);
+      max_val_s[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToRight(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      MoveToRight(grd,arr_grd_Computer_Test_Backup);
+      max_val_s[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToUp(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+
+      MoveToUp(grd,arr_grd_Computer_Test_Backup);
+      max_val_s[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  SaveGridValues(arr,arr_grd_Computer_Test_Backup);
+  if MoveToDown(grd,arr_grd_Computer_Test_Backup) then
+    begin
+      max_val[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+      //dirs_val[4] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
+
+      MoveToDown(grd,arr_grd_Computer_Test_Backup);
+      max_val_s[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
+    end;
+
+  for c:=4 downto 1 do
+    if (max_val[c]>last_val) then
+      begin
+        Result:=c;
+      end;
+
+{  for c:=1 to 4 do
+    begin
+      if dirs_val[c]=dirxLeft then
+        inc(dirs_val_c[1]);
+
+      if dirs_val[c]=dirxRight then
+        inc(dirs_val_c[2]);
+
+      if dirs_val[c]=dirxUp then
+        inc(dirs_val_c[3]);
+
+      if dirs_val[c]=dirxDown then
+        inc(dirs_val_c[4]);
+    end;
+
+  dirs_v:=0;
+  for c:=1 to 4 do
+    if (dirs_val_c[c]>dirs_v) then
+      begin
+        dirs_v:=dirs_val_c[c];
+        Result:=c;
+      end; }
+
+  Result:=dirs_v;
+
+  str:='';
+  for c:=4 downto 1 do
+    str:=str+IntToStr(max_val[c])+';';
+
+  str:=str+'|';
+  for c:=4 downto 1 do
+    str:=str+IntToStr(ord(dirs_val_c[c]))+';';
+
+  lbl_Machine1.Caption:=str;
 
 end;
 
@@ -1736,6 +2115,161 @@ begin
       if (Arr[c][r]>score) and (Arr[c][r]>0) then
         score := Arr[c][r];
   Result := score;
+end;
+
+function TfrmMain.GetMaxEqualVal(var grd: TStringGrid; var Arr: TgrdArr
+  ): TDirSimpleX;
+var
+  score,
+  xleft,
+  xright,
+  xup,
+  xdown,
+  xc,xr,
+  c,r:Integer;
+begin
+  score:=0;
+  Result:=dirxNowhere;
+
+  // to left
+  xleft:=0;
+  for r:= 0 to Pred(grd.RowCount) do
+    for c:=0 to (grd.ColCount) do
+      with grd do
+      begin
+        xc := c;
+        repeat
+          dec(xc);
+          if xc-1<0 then
+            Break;
+          if arr[xc-1][r]=arr[xc][r] then
+            begin
+              dec(xc);
+              //if (arr[xc][r]>0) then
+                begin
+                  inc(xleft);
+                end;
+            end;
+        until (xc<=0);
+      end;
+
+  // to right
+  xright:=0;
+  for r:= 0 to Pred(grd.RowCount) do
+    for c:=(grd.ColCount) downto 0 do
+      with grd do
+      begin
+        xc := c-1;
+        repeat
+          inc(xc);
+          if xc+1>=grd.ColCount then
+            Break;
+
+          if arr[xc+1][r]=arr[xc][r] then
+            begin
+              inc(xc);
+              //if (arr[xc][r]>0) then
+                begin
+                  inc(xright);
+                end;
+            end;
+        until (xc>=grd.ColCount);
+      end;
+
+  // to up
+  xup:=0;
+  for c:=0 to Pred(grd.ColCount) do
+    for r:= 0 to (grd.RowCount) do
+    with grd do
+    begin
+      xr := r;
+      repeat
+        dec(xr);
+        if xr-1<0 then
+          Break;
+
+        if arr[c][xr-1]=arr[c][xr] then
+          begin
+            dec(xr);
+            //if (arr[c][xr]>0) then
+              begin
+                inc(xup);
+              end;
+          end;
+      until (xr<=0);
+    end;
+
+  // to down
+  xdown:=0;
+  for c:=0 to Pred(grd.ColCount) do
+    for r:= (grd.RowCount) downto 0 do
+      with grd do
+      begin
+        xr := r-1;
+        repeat
+          inc(xr);
+          if xr+1>=grd.RowCount then
+            Break;
+
+          if arr[c][xr+1]=arr[c][xr] then
+            begin
+              inc(xr);
+              //if (arr[c][xr]>0) then
+                begin
+                  inc(xdown);
+                end;
+            end;
+        until (xr>=grd.RowCount);
+      end;
+
+  if xleft>score then
+    begin
+      score:=xleft;
+      Result:=dirxLeft;
+    end;
+  if xright>score then
+    begin
+      score:=xright;
+      Result:=dirxRight;
+    end;
+
+  if xup>score then
+    begin
+      score:=xup;
+      Result:=dirxUp;
+    end;
+  if xdown>score then
+    begin
+      score:=xdown;
+      Result:=dirxDown;
+    end;
+end;
+
+function TfrmMain.GetTotalVal(var grd: TStringGrid; var Arr: TgrdArr): Integer;
+var
+  score,
+  c,r:Integer;
+begin
+  score:=0;
+  Result:=0;
+  for c:=0 to Pred(grd.ColCount) do
+    for r:=0 to Pred(grd.RowCount) do
+      if (Arr[c][r]>0) then
+        score := score + Arr[c][r];
+  Result := score;
+end;
+
+function TfrmMain.GetSpaceVal(var grd: TStringGrid; var Arr: TgrdArr): Integer;
+var
+  score,
+  c,r:Integer;
+begin
+  score := 0;
+  for c:=0 to Pred(grd.ColCount) do
+    for r:=0 to Pred(grd.RowCount) do
+      if Arr[c][r]=0 then
+        inc(score);
+  Result:=score;
 end;
 
 
