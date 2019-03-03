@@ -1262,13 +1262,6 @@ begin
       lbl_Machine.Caption:='W:'+IntToStr(max_way);
     end;
 
-  {if (max_way=0) or (old_way=max_way) then
-    repeat
-      max_way:=Random(5);
-      if (max_way>0) and (max_way<5) and (max_way<>old_way) then
-        lbl_Machine.Caption:='R:'+IntToStr(max_way);
-    until (max_way>0) and (max_way<5) and (max_way<>old_way); }
-
   if (max_way=0) then
     begin
       max_way:=whc_cnt;
@@ -1474,7 +1467,7 @@ begin
       end;
 
 
-
+  //for debug only
   str:='';
   //for c:=4 downto 1 do
   str:=str+IntToStr(last_spc)+';';
