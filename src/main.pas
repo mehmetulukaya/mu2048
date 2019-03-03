@@ -1,3 +1,25 @@
+{ Mu2048
+
+  Copyright (C) 2019 Mehmet Ulukaya mehmetulukaya@gmail.com
+
+  This source is free software; you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free
+  Software Foundation; either version 2 of the License, or (at your option)
+  any later version.
+
+  This code is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  details.
+
+  A copy of the GNU General Public License is available on the World Wide Web
+  at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing
+  to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+  Boston, MA 02110-1335, USA.
+
+  This software designed for only experimental workarounds.
+  You can change,alter but you have to share what you changed!
+}
 unit main;
 
 {$mode objfpc}{$H+}
@@ -72,8 +94,6 @@ type TgrdArr = array of array of Integer;
     Label8: TLabel;
     Label9: TLabel;
     lbl_Human: TLabel;
-    lbl_Machine1: TLabel;
-    Memo1: TMemo;
     tmrComputer: TTimer;
     tmrGeneral: TTimer;
     btnPause: TToggleBox;
@@ -366,7 +386,6 @@ begin
           lbl_Human.Caption:='....';
           lbl_Machine.Caption:='....';
           StartNewGame(grd_2048H);
-          Memo1.Lines.Clear;
         end;
     end;
   SaveGridValues(arr_grd_Human,arr_grd_Human_Backup);
@@ -649,8 +668,6 @@ end;
 
 procedure TfrmMain.Memo1DblClick(Sender: TObject);
 begin
-  Memo1.SelectAll;
-  Memo1.CopyToClipboard;
 end;
 
 var
@@ -1237,7 +1254,7 @@ begin
     else
       lbl_Machine.Caption:='N:'+IntToStr(max_way);
 
-  max_way:=0;
+  //max_way:=0;
   if max_way=0 then
     begin
       SaveGridValues(arr,arr_grd_Computer_Test);
@@ -1245,12 +1262,12 @@ begin
       lbl_Machine.Caption:='W:'+IntToStr(max_way);
     end;
 
-  {if max_way=0 then
+  {if (max_way=0) or (old_way=max_way) then
     repeat
       max_way:=Random(5);
       if (max_way>0) and (max_way<5) and (max_way<>old_way) then
         lbl_Machine.Caption:='R:'+IntToStr(max_way);
-    until (max_way>0) and (max_way<5) and (max_way<>old_way);}
+    until (max_way>0) and (max_way<5) and (max_way<>old_way); }
 
   if (max_way=0) then
     begin
@@ -1279,6 +1296,7 @@ var
   max_same_cnt,
   last_val : Integer;
   max_val : array[1..4] of Integer;
+  max_val_s : array[1..4] of Integer;
 
   dirs_v,
   dirs_same_cnt,
@@ -1329,8 +1347,6 @@ begin
       dirs_val[1] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
       spc_val[1] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
       tot_val[1] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
-      //MoveToLeft(grd,arr_grd_Computer_Test_Backup);
-      //max_val_s[1] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
     end;
 
   SaveGridValues(arr,arr_grd_Computer_Test_Backup);
@@ -1340,8 +1356,6 @@ begin
       dirs_val[2] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
       spc_val[2] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
       tot_val[2] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
-      //MoveToRight(grd,arr_grd_Computer_Test_Backup);
-      //max_val_s[2] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
     end;
 
   SaveGridValues(arr,arr_grd_Computer_Test_Backup);
@@ -1351,8 +1365,6 @@ begin
       dirs_val[3] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
       spc_val[3] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
       tot_val[3] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
-      //MoveToUp(grd,arr_grd_Computer_Test_Backup);
-      //max_val_s[3] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
     end;
 
   SaveGridValues(arr,arr_grd_Computer_Test_Backup);
@@ -1362,8 +1374,6 @@ begin
       dirs_val[4] := GetMaxEqualVal(grd,arr_grd_Computer_Test_Backup);
       spc_val[4] := GetSpaceVal(grd,arr_grd_Computer_Test_Backup);
       tot_val[4] := GetTotalVal(grd,arr_grd_Computer_Test_Backup);
-      //MoveToDown(grd,arr_grd_Computer_Test_Backup);
-      //max_val_s[4] := GetMaxVal(grd,arr_grd_Computer_Test_Backup);
     end;
 
   dirs_cnt:=0;
@@ -1385,7 +1395,7 @@ begin
     else
       Res[1]:=0;
 
-  //if Res=0 then
+  //if Res[1]=0 then
     begin
       for c:=1 to 4 do
         begin
@@ -1423,7 +1433,7 @@ begin
 
     end;
 
-  //if Res=0 then
+  //if Res[1]=0 then
     begin
       max_same_cnt:=0;
       max_cnt:=0;
@@ -1490,10 +1500,6 @@ begin
     str:=str+IntToStr(Res[c])+';';
   str:=str+IntToStr(Result);
 
-  lbl_Machine1.Caption:=str;
-
-  if Memo1.Visible then
-    Memo1.Lines.Add(str);
 end;
 
 function TfrmMain.CheckWaysII(var grd: TStringGrid; var arr: TgrdArr): Integer;
@@ -1670,7 +1676,6 @@ var
 
   check_max,
   xc,xr,r,c : Integer;
-  str:String;
 begin
   Result:=0;
   check_max := 0;
@@ -1731,40 +1736,9 @@ begin
         Result:=c;
       end;
 
-{  for c:=1 to 4 do
-    begin
-      if dirs_val[c]=dirxLeft then
-        inc(dirs_val_c[1]);
-
-      if dirs_val[c]=dirxRight then
-        inc(dirs_val_c[2]);
-
-      if dirs_val[c]=dirxUp then
-        inc(dirs_val_c[3]);
-
-      if dirs_val[c]=dirxDown then
-        inc(dirs_val_c[4]);
-    end;
-
-  dirs_v:=0;
-  for c:=1 to 4 do
-    if (dirs_val_c[c]>dirs_v) then
-      begin
-        dirs_v:=dirs_val_c[c];
-        Result:=c;
-      end; }
 
   Result:=dirs_v;
 
-  str:='';
-  for c:=4 downto 1 do
-    str:=str+IntToStr(max_val[c])+';';
-
-  str:=str+'|';
-  for c:=4 downto 1 do
-    str:=str+IntToStr(ord(dirs_val_c[c]))+';';
-
-  lbl_Machine1.Caption:=str;
 
 end;
 

@@ -1,19 +1,19 @@
 object frmMain: TfrmMain
   Left = 125
-  Height = 537
+  Height = 447
   Top = 72
   Width = 768
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'MU2048 Simple Machine vs Human Game'
-  ClientHeight = 537
+  ClientHeight = 447
   ClientWidth = 768
   KeyPreview = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  Position = poDesktopCenter
-  LCLVersion = '1.9.0.0'
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.0.4'
   object grd_2048H: TStringGrid
     Left = 27
     Height = 243
@@ -56,9 +56,9 @@ object frmMain: TfrmMain
   end
   object Label1: TLabel
     Left = 341
-    Height = 15
+    Height = 17
     Top = 169
-    Width = 85
+    Width = 80
     Caption = 'Base Number:'
     ParentColor = False
   end
@@ -82,9 +82,9 @@ object frmMain: TfrmMain
   end
   object Label2: TLabel
     Left = 27
-    Height = 15
+    Height = 17
     Top = 325
-    Width = 69
+    Width = 66
     Caption = 'Total Score:'
     ParentColor = False
   end
@@ -133,9 +133,9 @@ object frmMain: TfrmMain
   end
   object Label3: TLabel
     Left = 476
-    Height = 15
+    Height = 17
     Top = 325
-    Width = 69
+    Width = 66
     Caption = 'Total Score:'
     ParentColor = False
   end
@@ -148,25 +148,25 @@ object frmMain: TfrmMain
   end
   object Label4: TLabel
     Left = 27
-    Height = 15
+    Height = 17
     Top = 49
-    Width = 48
+    Width = 44
     Caption = 'Human:'
     ParentColor = False
   end
   object Label5: TLabel
     Left = 476
-    Height = 15
+    Height = 17
     Top = 49
-    Width = 64
+    Width = 59
     Caption = 'Computer:'
     ParentColor = False
   end
   object Label6: TLabel
     Left = 27
-    Height = 15
+    Height = 17
     Top = 353
-    Width = 66
+    Width = 65
     Caption = 'Total Move:'
     ParentColor = False
   end
@@ -179,9 +179,9 @@ object frmMain: TfrmMain
   end
   object Label7: TLabel
     Left = 476
-    Height = 15
+    Height = 17
     Top = 353
-    Width = 66
+    Width = 65
     Caption = 'Total Move:'
     ParentColor = False
   end
@@ -209,9 +209,9 @@ object frmMain: TfrmMain
   end
   object Label8: TLabel
     Left = 348
-    Height = 15
+    Height = 17
     Top = 49
-    Width = 70
+    Width = 67
     Caption = 'Game Type:'
     ParentColor = False
   end
@@ -249,9 +249,9 @@ object frmMain: TfrmMain
   end
   object Label9: TLabel
     Left = 348
-    Height = 15
+    Height = 17
     Top = 360
-    Width = 53
+    Width = 50
     Caption = 'Controls:'
     ParentColor = False
   end
@@ -283,9 +283,9 @@ object frmMain: TfrmMain
   end
   object Label10: TLabel
     Left = 348
-    Height = 15
+    Height = 17
     Top = 106
-    Width = 74
+    Width = 69
     Caption = 'Game Level:'
     ParentColor = False
   end
@@ -319,23 +319,23 @@ object frmMain: TfrmMain
   end
   object lbl_Machine: TLabel
     Left = 476
-    Height = 15
+    Height = 17
     Top = 401
-    Width = 20
+    Width = 15
     Caption = '.....'
     ParentColor = False
   end
   object lbl_Human: TLabel
     Left = 27
-    Height = 15
+    Height = 17
     Top = 401
-    Width = 20
+    Width = 15
     Caption = '.....'
     ParentColor = False
   end
   object TrackBar1: TTrackBar
     Left = 643
-    Height = 35
+    Height = 40
     Top = 347
     Width = 100
     Frequency = 50
@@ -349,43 +349,22 @@ object frmMain: TfrmMain
   end
   object Label11: TLabel
     Left = 643
-    Height = 15
+    Height = 17
     Top = 325
-    Width = 42
+    Width = 38
     Caption = 'Speed:'
     ParentColor = False
-  end
-  object lbl_Machine1: TLabel
-    Left = 274
-    Height = 15
-    Top = 427
-    Width = 20
-    Caption = '.....'
-    ParentColor = False
-  end
-  object Memo1: TMemo
-    Left = 0
-    Height = 85
-    Top = 452
-    Width = 768
-    Align = alBottom
-    Lines.Strings = (
-      'Memo1'
-    )
-    OnDblClick = Memo1DblClick
-    ScrollBars = ssVertical
-    TabOrder = 14
   end
   object tmrGeneral: TTimer
     Interval = 250
     OnTimer = tmrGeneralTimer
-    Left = 519
-    Top = 144
+    left = 519
+    top = 144
   end
   object tmrComputer: TTimer
     Interval = 500
     OnTimer = tmrComputerTimer
-    Left = 683
-    Top = 222
+    left = 683
+    top = 222
   end
 end
